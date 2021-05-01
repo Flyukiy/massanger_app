@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:massanger_app/widgets/chat/messages.dart';
+import 'package:massanger_app/widgets/chat/new_message.dart';
 
 class ChatScreen extends StatelessWidget {
   @override
@@ -35,36 +37,26 @@ class ChatScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: StreamBuilder(
-        stream: Firestore.instance
-            .collection('/chats/mP2kEQLolUWgAa20KiZ7/messages')
-            .snapshots(),
-        builder: (ctx, streamSnapShot) {
-          if (streamSnapShot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          final documents = streamSnapShot.data.documents;
-          return ListView.builder(
-            itemCount: documents.length,
-            itemBuilder: (ctx, i) => Container(
-              padding: EdgeInsets.all(8),
-              child: Text(documents[i]['text']),
+      body: Container(
+        child: Column(
+          children: [
+            Expanded(
+              child: Messages(),
             ),
-          );
-        },
+            NewMessages(),
+          ],
+        ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Firestore.instance
-              .collection('/chats/mP2kEQLolUWgAa20KiZ7/messages')
-              .add({
-            'text': 'This is testing )',
-          });
-        },
-        child: Icon(Icons.add),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {
+      //     Firestore.instance
+      //         .collection('/chats/mP2kEQLolUWgAa20KiZ7/messages')
+      //         .add({
+      //       'text': 'This is testing )',
+      //     });
+      //   },
+      //   child: Icon(Icons.add),
+      // ),
     );
   }
 }
