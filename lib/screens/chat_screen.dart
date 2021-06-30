@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:massanger_app/widgets/chat/messages.dart';
 import 'package:massanger_app/widgets/chat/new_message.dart';
 
@@ -47,16 +46,6 @@ class ChatScreen extends StatelessWidget {
           ],
         ),
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {
-      //     Firestore.instance
-      //         .collection('/chats/mP2kEQLolUWgAa20KiZ7/messages')
-      //         .add({
-      //       'text': 'This is testing )',
-      //     });
-      //   },
-      //   child: Icon(Icons.add),
-      // ),
     );
   }
 }

@@ -1,12 +1,16 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:massanger_app/widgets/pickers/user_image_picker.dart';
 
 class AuthForm extends StatefulWidget {
   AuthForm(this.submitFn, this.isLoading);
+
   final bool isLoading;
   final void Function(
     String email,
     String username,
     String password,
+    File image,
     bool isLogin,
     BuildContext ctx,
   ) submitFn;
@@ -22,10 +26,19 @@ class _AuthFormState extends State<AuthForm> {
   var _userEmail = '';
   var _userName = '';
   var _userPassword = '';
+  File _userImageFile;
 
   void _trySubmit() {
     final isValid = _formKey.currentState.validate();
     FocusScope.of(context).unfocus();
+
+    if (_userImageFile == null && !_isLogin) {
+      Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text('Please select a picture'),
+        backgroundColor: Theme.of(context).errorColor,
+      ));
+      return;
+    }
 
     if (isValid) {
       _formKey.currentState.save();
@@ -33,11 +46,16 @@ class _AuthFormState extends State<AuthForm> {
         _userEmail.trim(),
         _userName.trim(),
         _userPassword.trim(),
+        _userImageFile,
         _isLogin,
         context,
       );
       // Use those variable to send auth request
     }
+  }
+
+  void _pickedImage(File pickedImage) {
+    _userImageFile = pickedImage;
   }
 
   @override
@@ -53,6 +71,7 @@ class _AuthFormState extends State<AuthForm> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  if (!_isLogin) UserImagePicker(_pickedImage),
                   TextFormField(
                     key: ValueKey('email'),
                     validator: (value) {
@@ -100,15 +119,13 @@ class _AuthFormState extends State<AuthForm> {
                     obscureText: true,
                   ),
                   SizedBox(height: 13),
-                  if (widget.isLoading)
-                    CircularProgressIndicator(),
+                  if (widget.isLoading) CircularProgressIndicator(),
                   if (!widget.isLoading)
                     RaisedButton(
                       child: Text(_isLogin ? 'Login' : 'Sign Up'),
                       onPressed: _trySubmit,
                     ),
-                  if (widget.isLoading)
-                    CircularProgressIndicator(),
+                  if (widget.isLoading) CircularProgressIndicator(),
                   if (!widget.isLoading)
                     FlatButton(
                       child: Text(_isLogin
