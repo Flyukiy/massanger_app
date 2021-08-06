@@ -26,9 +26,8 @@ class _AuthScreenState extends State<AuthScreen> {
     bool isLogin,
     BuildContext ctx,
   ) async {
-    AuthResult authResult;
+    UserCredential authResult;
     try {
-
       setState(() {
         _isLoading = true;
       });
@@ -44,10 +43,23 @@ class _AuthScreenState extends State<AuthScreen> {
           password: password,
         );
 
+        // Image upload
+        final ref = FirebaseStorage.instance
+            .ref()
+            .child('user_images')
+            .child(authResult.user.uid + '.jpg');
+
+        await ref.putFile(image).whenComplete(() => null);
+        final url = await ref.getDownloadURL();
+
         // FirebaseStorage.instance.ref();
-        await Firestore.instance.collection('users').document(authResult.user.uid).setData({
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(authResult.user.uid)
+            .set({
           'username': username,
           'email': email,
+          'image_url': url,
         });
       }
     } on PlatformException catch (err) {
@@ -56,7 +68,7 @@ class _AuthScreenState extends State<AuthScreen> {
         message = err.message;
       }
 
-      Scaffold.of(ctx).showSnackBar(
+      ScaffoldMessenger.of(ctx).showSnackBar(
         SnackBar(
           content: Text(message),
         ),
